@@ -24,37 +24,41 @@ jobs:
           name: Install dependencies
           command: npm install
       - run:
-          if [ $CIRCLE_BRANCH == $SOURCE_BRANCH ]; then
+          name: Deploy
+          command: 
+            if [ $CIRCLE_BRANCH == $SOURCE_BRANCH ]; then
 
-            git config --global user.email $GH_EMAIL
+              git config --global user.email $GH_EMAIL
 
-            git config --global user.name "$GH_NAME"
+              git config --global user.name "$GH_NAME"
 
-            git clone $CIRCLE_REPOSITORY_URL out
+              git clone $CIRCLE_REPOSITORY_URL out
 
-            cd out
+              cd out
 
-            git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
+              git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
 
-            git rm -rf .
+              git rm -rf .
 
-            cd ..
+              cd ..
 
-            npm run build
+              npm run build
 
-            cp -a build/. out/.
+              cp -a build/. out/.
 
-            mkdir -p out/.circleci && cp -a .circleci/. out/.circleci/.
+              mkdir -p out/.circleci && cp -a .circleci/. out/.circleci/.
 
-            cd out
+              echo $CNAME > out/CNAME
 
-            git add -A
+              cd out
 
-            git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
+              git add -A
 
-            git push origin $TARGET_BRANCH
+              git commit -m "Automated deployment to GitHub Pages" --allow-empty
 
-          fi
+              git push origin $TARGET_BRANCH
+
+            fi
 workflows:
   version: 2
   build_and_test:
