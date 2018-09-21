@@ -4,13 +4,13 @@ jobs:
     docker:
       - image: circleci/node:10.11.0
     steps:
-      - Install dependencies
+      - checkout
       - run: npm install
   test:
     docker:
       - image: circleci/node:10.11.0-browsers
     steps:
-      - Run tests
+      - checkout
       - run: npm test
 workflows:
   version: 2
