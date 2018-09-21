@@ -6,47 +6,21 @@ jobs:
         - gh-pages
     docker:
       - image: circleci/node:10.11.0
-    working_directory: ~/app
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-      - run:
-          name: Install dependencies
-          command: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm install
   test:
-    branches:
-      ignore:
-        - gh-pages
     docker:
       - image: circleci/node:10.11.0-browsers
-    working_directory: ~/app
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-      - run:
-          name: Install dependencies
-          command: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+      - run: npm install
   deploy:
     branches:
       ignore:
         - gh-pages
     docker:
       - image: circleci/node:10.11.0
-    working_directory: ~/app
     environment:
       - SOURCE_BRANCH: develop
       - TARGET_BRANCH: gh-pages
