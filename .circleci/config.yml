@@ -1,6 +1,9 @@
 version: 2
 jobs:
   build:
+    branches:
+      ignore:
+        - gh-pages
     docker:
       - image: circleci/node:10.11.0
     steps:
@@ -11,10 +14,63 @@ jobs:
       - image: circleci/node:10.11.0-browsers
     steps:
       - checkout
-      - run: npm test
+      - run: npm install
+  deploy:
+    branches:
+      ignore:
+        - gh-pages
+    docker:
+      - image: circleci/node:10.11.0
+    working_directory: ~/repo
+    environment:
+      - SOURCE_BRANCH: develop
+      - TARGET_BRANCH: gh-pages
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+      - run:
+          name: Install dependencies
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Run tests
+          command: npm test
+      - deploy:
+          name: Deploy
+          command: |
+            if [ $CIRCLE_BRANCH == $SOURCE_BRANCH ]; then
+              git config --global user.email $GH_EMAIL
+              git config --global user.name $GH_NAME
+
+              git clone $CIRCLE_REPOSITORY_URL out
+
+              cd out
+              git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
+              git rm -rf .
+              cd ..
+
+              npm run build
+
+              cp -a build/. out/.
+
+              mkdir -p out/.circleci && cp -a .circleci/. out/.circleci/.
+              cd out
+
+              git add -A
+              git commit -m "Automated deployment to GitHub Pages: ${CIRCLE_SHA1}" --allow-empty
+
+              git push origin $TARGET_BRANCH
+            fi
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
       - test
+      - deploy
