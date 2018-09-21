@@ -1,6 +1,10 @@
 version: 2
 jobs:
   build:
+    filters:
+      branches:
+        ignore:
+          - gh-pages
     docker:
       - image: circleci/node:10.11.0
     steps:
@@ -13,6 +17,12 @@ jobs:
       - checkout
       - run: npm install
   deploy:
+    filters:
+      requires:
+        - build
+      branches:
+        ignore:
+          - gh-pages
     docker:
       - image: circleci/node:10.11.0
     environment:
@@ -62,7 +72,7 @@ jobs:
 
               git add -A
 
-              git commit -m "Automated deployment to GitHub Pages" --allow-empty
+              git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
 
               git push origin $TARGET_BRANCH
 
