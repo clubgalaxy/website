@@ -1,9 +1,10 @@
 version: 2
 jobs:
   build:
-    branches:
-      ignore:
-        - gh-pages
+    filters:
+      branches:
+        ignore:
+          - gh-pages
     docker:
       - image: circleci/node:10.11.0
     steps:
@@ -16,9 +17,12 @@ jobs:
       - checkout
       - run: npm install
   deploy:
-    branches:
-      ignore:
-        - gh-pages
+    filters:
+      requires:
+        - build
+      branches:
+        ignore:
+          - gh-pages
     docker:
       - image: circleci/node:10.11.0
     environment:
