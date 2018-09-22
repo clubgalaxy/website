@@ -1,33 +1,12 @@
+defaults: &defaults
+  working_directory: /tmp
+  docker:
+    - image: circleci/node:10.11.0-browsers
+
 version: 2
 jobs:
-  build:
-    filters:
-      branches:
-        ignore:
-          - gh-pages
-    docker:
-      - image: circleci/node:10.11.0
-    steps:
-      - checkout
-      - run: npm install
-  test:
-    docker:
-      - image: circleci/node:10.11.0-browsers
-    steps:
-      - checkout
-      - run: npm install
-  deploy:
-    filters:
-      requires:
-        - build
-      branches:
-        ignore:
-          - gh-pages
-    docker:
-      - image: circleci/node:10.11.0
-    environment:
-      - SOURCE_BRANCH: develop
-      - TARGET_BRANCH: gh-pages
+  dependencies:
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -41,6 +20,26 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: .
+          paths: node_modules
+  build:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Build
+          command: npm run build
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp
+    environment:
+      - SOURCE_BRANCH: develop
+      - TARGET_BRANCH: gh-pages
+    steps:
       - deploy:
           name: Deploy
           command: 
