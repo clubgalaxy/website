@@ -4,8 +4,7 @@ defaults: &defaults
     - image: circleci/node:10.11.0-browsers
   filters:
     branches:
-      ignore:
-        - gh-pages
+      only: develop
 
 version: 2
 jobs:
