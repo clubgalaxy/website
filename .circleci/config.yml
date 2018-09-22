@@ -24,7 +24,9 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - persist_to_workspace:
           root: .
-          paths: node_modules
+          paths: 
+          - node_modules
+          - src/fonts
   build:
     <<: *defaults
     steps:
