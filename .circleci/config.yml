@@ -30,7 +30,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp
+          at: ~/app
       - run:
           name: Build
           command: npm run build
