@@ -36,16 +36,19 @@ jobs:
       - run:
           name: Build
           command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths: 
+          - build
   deploy:
     <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/app
     environment:
       - SOURCE_BRANCH: develop
       - TARGET_BRANCH: gh-pages
     steps:
+      - checkout
+      - attach_workspace:
+          at: ~/app
       - deploy:
           name: Deploy
           command: 
@@ -55,17 +58,13 @@ jobs:
 
               git config --global user.name "$GH_NAME"
 
-              git clone $CIRCLE_REPOSITORY_URL out
+              git clone -b $TARGET_BRANCH --single-branch $CIRCLE_REPOSITORY_URL out
 
               cd out
-
-              git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
 
               git rm -rf .
 
               cd ..
-
-              npm run build
 
               cp -a build/. out/.
 
