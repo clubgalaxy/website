@@ -13,8 +13,7 @@ jobs:
           at: ~/app
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Install dependencies
           command: npm install
@@ -25,8 +24,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: 
-          - node_modules
-          - src/fonts
+            - node_modules
+            - src/fonts
   build:
     <<: *defaults
     steps:
@@ -39,7 +38,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: 
-          - build
+            - build
   deploy:
     <<: *defaults
     environment:
@@ -51,33 +50,20 @@ jobs:
           at: ~/app
       - deploy:
           name: Deploy
-          command: 
+          command: |
             if [ $CIRCLE_BRANCH == $SOURCE_BRANCH ]; then
-
               git config --global user.email $GH_EMAIL
-
               git config --global user.name "$GH_NAME"
-
               git clone -b $TARGET_BRANCH --single-branch $CIRCLE_REPOSITORY_URL out
-
               cd out
-
               git rm -rf .
-
               cd ..
-
               cp -a build/. out/.
-
               echo $CNAME > out/CNAME
-
               cd out
-
               git add -A
-
               git commit -m "Automated deployment to GitHub Pages ${CIRCLE_SHA1}" --allow-empty
-
               git push origin $TARGET_BRANCH
-
             fi
 workflows:
   version: 2
