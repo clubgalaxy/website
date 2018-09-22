@@ -2,6 +2,9 @@ defaults: &defaults
   working_directory: ~/app
   docker:
     - image: circleci/node:10.11.0-browsers
+  branches:
+    ignore:
+      - gh-pages
 
 version: 2
 jobs:
