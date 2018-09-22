@@ -7,9 +7,6 @@ version: 2
 jobs:
   dependencies:
     <<: *defaults
-    filters:
-      branches:
-        only: develop
     steps:
       - checkout
       - attach_workspace:
@@ -32,9 +29,6 @@ jobs:
           - src/fonts
   build:
     <<: *defaults
-    filters:
-      branches:
-        only: develop
     steps:
       - checkout
       - attach_workspace:
@@ -48,16 +42,13 @@ jobs:
           - build
   deploy:
     <<: *defaults
-    filters:
-      branches:
-        only: develop
     environment:
       - SOURCE_BRANCH: develop
       - TARGET_BRANCH: gh-pages
     steps:
       - checkout
       - attach_workspace:
-          at: ~/app/build
+          at: ~/app
       - deploy:
           name: Deploy
           command: 
@@ -76,8 +67,6 @@ jobs:
               cd ..
 
               cp -a build/. out/.
-
-              mkdir -p out/.circleci && cp -a .circleci/. out/.circleci/.
 
               echo $CNAME > out/CNAME
 
