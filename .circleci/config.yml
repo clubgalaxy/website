@@ -2,14 +2,14 @@ defaults: &defaults
   working_directory: ~/app
   docker:
     - image: circleci/node:10.11.0-browsers
-  filters:
-    branches:
-      only: develop
 
 version: 2
 jobs:
   dependencies:
     <<: *defaults
+    filters:
+      branches:
+        only: develop
     steps:
       - checkout
       - attach_workspace:
@@ -32,6 +32,9 @@ jobs:
           - src/fonts
   build:
     <<: *defaults
+    filters:
+      branches:
+        only: develop
     steps:
       - checkout
       - attach_workspace:
@@ -45,6 +48,9 @@ jobs:
           - build
   deploy:
     <<: *defaults
+    filters:
+      branches:
+        only: develop
     environment:
       - SOURCE_BRANCH: develop
       - TARGET_BRANCH: gh-pages
