@@ -69,7 +69,7 @@ export default function (props) {
       <LoginScreen id="login-screen">
         <View>
           <Page loginScreen>
-            <LoginScreenTitle>Login</LoginScreenTitle>
+            <LoginScreenTitle>Log-in</LoginScreenTitle>
             <List form>
               <ListItem>
                 <Label>Username</Label>
